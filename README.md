@@ -2,7 +2,7 @@
 
 # Git Workflow — Claude Code Skill
 
-[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-7c3aed.svg)](https://claude.ai/code)
 [![Conventional Commits](https://img.shields.io/badge/commits-conventional-fe5196.svg?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
@@ -97,7 +97,7 @@ gitGraph
     merge "release/1.0" id: "  " tag: "v1.0.0"
 
     checkout develop
-    merge "release/1.0" id: " back-merge"
+    merge main id: " back-merge"
 
     checkout main
     branch "hotfix/4-crash" order: 2
@@ -108,7 +108,7 @@ gitGraph
     merge "hotfix/4-crash" id: "   " tag: "v1.0.1"
 
     checkout develop
-    merge "hotfix/4-crash" id: " hotfix-sync"
+    merge main id: " hotfix-sync"
 
     commit id: "next"
 ```
