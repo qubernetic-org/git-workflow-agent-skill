@@ -1,7 +1,7 @@
 ---
 name: git-workflow
 description: "Enforce a strict Gitflow-based workflow with conventional commits, semantic versioning, and issue-driven branching. Use when the user asks to commit, create a branch, open a PR, tag a release, or perform any git operation. Also applies when mentions 'commit', 'branch', 'merge', 'release', 'hotfix', 'gitflow', 'conventional commit', 'semantic versioning', or 'semver'."
-version: 1.0.0
+version: 1.0.1
 license: MIT
 metadata:
   author: Qubernetic
@@ -255,7 +255,8 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
    git push origin v1.2.0
 
 6. PR: main → develop (back-merge)
-   - Ensures develop has the version bump and changelog
+   - No code review required (content already reviewed for main)
+   - Exists for CI validation and audit trail only
    - Merge with --no-ff
 
 7. Delete release branch (remote + local)
@@ -279,7 +280,8 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
    - Merge with --no-ff, tag v1.2.1
 
 6. PR: main → develop (back-merge)
-   - Ensures develop gets the fix
+   - No code review required (content already reviewed for main)
+   - Exists for CI validation and audit trail only
    - Merge with --no-ff
 
 7. Delete hotfix branch (remote + local)
