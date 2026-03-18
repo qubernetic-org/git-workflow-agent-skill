@@ -97,7 +97,7 @@ gitGraph
     merge "release/1.0" id: "  " tag: "v1.0.0"
 
     checkout develop
-    merge "release/1.0" id: " back-merge"
+    merge main id: " back-merge"
 
     checkout main
     branch "hotfix/4-crash" order: 2
@@ -108,7 +108,7 @@ gitGraph
     merge "hotfix/4-crash" id: "   " tag: "v1.0.1"
 
     checkout develop
-    merge "hotfix/4-crash" id: " hotfix-sync"
+    merge main id: " hotfix-sync"
 
     commit id: "next"
 ```
