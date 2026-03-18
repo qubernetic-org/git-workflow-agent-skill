@@ -159,7 +159,7 @@ PR opened with Conventional Commits title
     ↓
 Review + merge (--no-ff)
     ↓
-Issue auto-closed by PR
+Issue closed (manually or auto-closed — see note below)
     ↓
 Branch deleted (remote + local)
 ```
@@ -171,6 +171,16 @@ Branch deleted (remote + local)
 3. **PR title** follows Conventional Commits format: `<type>(<scope>): <description> (#<issue>)` — e.g., `feat(auth): add OAuth2 login flow (#42)`
 4. **PR body** references the issue: `Closes #42`
 5. **Branch is deleted** after merge — both remote (enable GitHub's "Automatically delete head branches") and local (`git fetch --prune && git branch -d <branch>`)
+
+### GitHub Auto-Close Limitation
+
+> **Important:** GitHub only auto-closes issues via `Closes #X` when the PR targets the repository's **default branch** (usually `main`). In Gitflow, feature and fix PRs target `develop`, so issues will **not** auto-close.
+>
+> **Workarounds:**
+> 1. **Close manually** after merging to `develop` — use `gh issue close <number>` or close via GitHub UI
+> 2. **Use GitHub Actions** — add a workflow that auto-closes the referenced issue when a PR is merged to `develop`
+>
+> Always include `Closes #X` in PR bodies for traceability, even though it won't trigger auto-close on `develop` merges.
 
 ### Issue Labels
 
