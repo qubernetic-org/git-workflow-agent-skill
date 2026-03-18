@@ -1,0 +1,26 @@
+name: Feature Request
+description: Suggest a new workflow rule, decision guide, or improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What rule, guide, or improvement would you like to see?
+      placeholder: "e.g., Add support for trunk-based development as an alternative mode"
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: When would this be useful? What workflow scenario does this address?
+    validations:
+      required: true
