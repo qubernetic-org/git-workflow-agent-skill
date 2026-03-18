@@ -59,6 +59,8 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 - **Never squash merge** into protected branches — squashing destroys the atomic commit history you carefully crafted
 - **Never rebase merge** into protected branches — rebase rewrites hashes and removes merge commit markers
 
+> **GitHub settings:** In repository settings, only enable "Allow merge commits" and disable "Allow squash merging" and "Allow rebase merging". When using `gh pr merge`, always pass `--merge --delete-branch`.
+
 ### Keeping Feature Branches Up to Date
 
 - **Not yet pushed**: rebase onto `develop` is acceptable (`git rebase develop`)
