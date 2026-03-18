@@ -1,0 +1,52 @@
+name: Bug Report
+description: The skill produced incorrect git behavior
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please provide enough detail so we can reproduce the issue.
+
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt Used
+      description: What did you ask Claude Code to do?
+      placeholder: "e.g., Commit my changes to the feature branch"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-went-wrong
+    attributes:
+      label: What Went Wrong
+      description: Describe the incorrect behavior.
+      placeholder: "e.g., Claude committed directly to develop instead of creating a PR"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: violation
+    attributes:
+      label: Rule Violated
+      description: Which workflow rule was broken?
+      options:
+        - "Committed directly to protected branch"
+        - "Wrong commit message format"
+        - "Added AI co-author signature"
+        - "Mixed multiple changes in one commit"
+        - "Wrong branch type or base"
+        - "Missing issue reference"
+        - "Wrong version bump"
+        - "Other (describe above)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should Claude have done instead?
+    validations:
+      required: false
