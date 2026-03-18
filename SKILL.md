@@ -5,6 +5,7 @@ version: 1.0.2
 license: MIT
 metadata:
   author: Qubernetic
+  version: 1.0.2
 ---
 
 # Git Workflow Skill
