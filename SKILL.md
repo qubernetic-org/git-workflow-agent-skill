@@ -1,7 +1,7 @@
 ---
 name: git-workflow
 description: "Enforce a strict Gitflow-based workflow with conventional commits, semantic versioning, and issue-driven branching. Use when the user asks to commit, create a branch, open a PR, tag a release, or perform any git operation. Also applies when mentions 'commit', 'branch', 'merge', 'release', 'hotfix', 'gitflow', 'conventional commit', 'semantic versioning', or 'semver'."
-version: 1.0.0
+version: 1.0.1
 license: MIT
 metadata:
   author: Qubernetic
