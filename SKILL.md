@@ -32,6 +32,7 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 5. **Issue-driven workflow** — every branch starts from a GitHub Issue and closes it
 6. **PR-only merges** — `main` and `develop` are never committed to directly
 7. **Always `--no-ff`** — all merges into protected branches use `--no-ff` to preserve branch topology
+8. **Discipline over tooling** — follow all workflow rules even when branch protection is not configured or when operating as an admin user who can bypass it. Branch protection is a safety net, not a substitute for discipline. Early-stage repositories may lack protection rules, and admin users are often exempt — neither case permits direct commits to protected branches or merging without a PR.
 
 ---
 
