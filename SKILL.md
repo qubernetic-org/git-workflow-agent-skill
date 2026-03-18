@@ -1,11 +1,11 @@
 ---
 name: git-workflow
 description: "Enforce a strict Gitflow-based workflow with conventional commits, semantic versioning, and issue-driven branching. Use when the user asks to commit, create a branch, open a PR, tag a release, or perform any git operation. Also applies when mentions 'commit', 'branch', 'merge', 'release', 'hotfix', 'gitflow', 'conventional commit', 'semantic versioning', or 'semver'."
-version: 1.0.3
+version: 1.0.4
 license: MIT
 metadata:
   author: Qubernetic
-  version: 1.0.3
+  version: 1.0.4
 ---
 
 # Git Workflow Skill
@@ -270,12 +270,14 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
    git tag -a v1.2.0 -m "Release 1.2.0"
    git push origin v1.2.0
 
-6. PR: main → develop (back-merge)
+6. Create GitHub Release from the tag (see Release Notes Template below)
+
+7. PR: main → develop (back-merge)
    - No code review required (content already reviewed for main)
    - Exists for CI validation and audit trail only
    - Merge with --no-ff
 
-7. Delete release branch (remote + local)
+8. Delete release branch (remote + local)
 ```
 
 ### Hotfix Release
@@ -293,15 +295,35 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
    - Commit: "chore(release): prepare 1.2.1"
 
 5. PR: hotfix/89-auth-crash → main
-   - Merge with --no-ff, tag v1.2.1
+   - Merge with --no-ff
 
-6. PR: main → develop (back-merge)
+6. Tag on main:
+   git tag -a v1.2.1 -m "Release 1.2.1"
+   git push origin v1.2.1
+
+7. Create GitHub Release from the tag (see Release Notes Template below)
+
+8. PR: main → develop (back-merge)
    - No code review required (content already reviewed for main)
    - Exists for CI validation and audit trail only
    - Merge with --no-ff
 
-7. Delete hotfix branch (remote + local)
+9. Delete hotfix branch (remote + local)
 ```
+
+### Release Notes Template
+
+Every tag must have a corresponding GitHub Release. Use `gh release create` or the GitHub UI. The release notes follow this template:
+
+```markdown
+<changelog ### sections from CHANGELOG.md for this version>
+
+**Full Changelog**: https://github.com/<owner>/<repo>/compare/v<prev>...v<version>
+```
+
+- **Title**: `v<version>` (e.g., `v1.2.0`) — do not repeat the version in the body, GitHub already displays it prominently
+- **Body**: Copy the `###` sections (Added, Fixed, Changed, etc.) from CHANGELOG.md for this version — skip the `## [version] - date` heading
+- **Full Changelog link**: Use `/compare/v<prev>...v<version>`, or `/commits/v<version>` for the initial release
 
 ---
 
@@ -346,6 +368,7 @@ Follow [Keep a Changelog](https://keepachangelog.com/):
 - Skip version bump on release
 - Delete `main` or `develop` branches
 - Tag a release without updating CHANGELOG.md
+- Tag a release without creating a GitHub Release
 - Use `git commit --amend` on pushed commits
 - Use `git rebase` on shared/published branches
 
