@@ -1,10 +1,11 @@
 ---
 name: git-workflow
 description: "Enforce a strict Gitflow-based workflow with conventional commits, semantic versioning, and issue-driven branching. Use when the user asks to commit, create a branch, open a PR, tag a release, or perform any git operation. Also applies when mentions 'commit', 'branch', 'merge', 'release', 'hotfix', 'gitflow', 'conventional commit', 'semantic versioning', or 'semver'."
-version: 1.0.2
+version: 1.0.3
 license: MIT
 metadata:
   author: Qubernetic
+  version: 1.0.3
 ---
 
 # Git Workflow Skill
@@ -31,6 +32,7 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 5. **Issue-driven workflow** — every branch starts from a GitHub Issue and closes it
 6. **PR-only merges** — `main` and `develop` are never committed to directly
 7. **Always `--no-ff`** — all merges into protected branches use `--no-ff` to preserve branch topology
+8. **Discipline over tooling** — follow all workflow rules even when branch protection is not configured or when operating as an admin user who can bypass it. Branch protection is a safety net, not a substitute for discipline. Early-stage repositories may lack protection rules, and admin users are often exempt — neither case permits direct commits to protected branches or merging without a PR.
 
 ---
 
@@ -57,6 +59,8 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 - **Always use `--no-ff`** for merges into `main` and `develop` — this preserves the branch topology and groups commits visually
 - **Never squash merge** into protected branches — squashing destroys the atomic commit history you carefully crafted
 - **Never rebase merge** into protected branches — rebase rewrites hashes and removes merge commit markers
+
+> **GitHub settings:** In repository settings, only enable "Allow merge commits" and disable "Allow squash merging" and "Allow rebase merging". When using `gh pr merge`, always pass `--merge --delete-branch`.
 
 ### Keeping Feature Branches Up to Date
 
@@ -98,7 +102,9 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 | `perf` | Performance improvement | PATCH bump |
 | `ci` | CI/CD configuration changes | None |
 | `build` | Build system or external dependency changes | None |
-| `revert` | Reverting a previous commit | Depends |
+| `revert` | Reverting a previous commit | Depends on the original commit type |
+
+> **Revert semver note:** The impact mirrors the reverted commit's type. Reverting a `feat` removes a capability (potentially MAJOR if it was public API), reverting a `fix` reintroduces a bug (PATCH when re-fixed). Evaluate the user-facing effect at release time.
 
 ### Breaking Changes
 
@@ -154,7 +160,7 @@ PR opened with Conventional Commits title
     ↓
 Review + merge (--no-ff)
     ↓
-Issue auto-closed by PR
+Issue closed (manually or auto-closed — see note below)
     ↓
 Branch deleted (remote + local)
 ```
@@ -166,6 +172,16 @@ Branch deleted (remote + local)
 3. **PR title** follows Conventional Commits format: `<type>(<scope>): <description> (#<issue>)` — e.g., `feat(auth): add OAuth2 login flow (#42)`
 4. **PR body** references the issue: `Closes #42`
 5. **Branch is deleted** after merge — both remote (enable GitHub's "Automatically delete head branches") and local (`git fetch --prune && git branch -d <branch>`)
+
+### GitHub Auto-Close Limitation
+
+> **Important:** GitHub only auto-closes issues via `Closes #X` when the PR targets the repository's **default branch** (usually `main`). In Gitflow, feature and fix PRs target `develop`, so issues will **not** auto-close.
+>
+> **Workarounds:**
+> 1. **Close manually** after merging to `develop` — use `gh issue close <number>` or close via GitHub UI
+> 2. **Use GitHub Actions** — add a workflow that auto-closes the referenced issue when a PR is merged to `develop`
+>
+> Always include `Closes #X` in PR bodies for traceability, even though it won't trigger auto-close on `develop` merges.
 
 ### Issue Labels
 
