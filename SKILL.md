@@ -101,7 +101,9 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 | `perf` | Performance improvement | PATCH bump |
 | `ci` | CI/CD configuration changes | None |
 | `build` | Build system or external dependency changes | None |
-| `revert` | Reverting a previous commit | Depends |
+| `revert` | Reverting a previous commit | Depends on the original commit type |
+
+> **Revert semver note:** The impact mirrors the reverted commit's type. Reverting a `feat` removes a capability (potentially MAJOR if it was public API), reverting a `fix` reintroduces a bug (PATCH when re-fixed). Evaluate the user-facing effect at release time.
 
 ### Breaking Changes
 
