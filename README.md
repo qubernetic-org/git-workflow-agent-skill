@@ -2,7 +2,7 @@
 
 # Git Workflow — Claude Code Skill
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-7c3aed.svg)](https://claude.ai/code)
 [![Conventional Commits](https://img.shields.io/badge/commits-conventional-fe5196.svg?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
