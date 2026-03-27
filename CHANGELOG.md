@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-03-28
+
+### Added
+
+- GitHub Actions workflow to run lint on every PR (#79)
+- Lint status badge in README (#92)
+- Workflow comparison section in README: Gitflow vs GitHub Flow vs Trunk-Based (#80)
+- Integration guide with commitlint, husky, and branch name CI validation (#91)
+- 5 additional troubleshooting scenarios: wrong base branch, merge conflicts, deleted branch, committed secrets, wrong merge target (#81)
+- ONBOARDING.md worked example and FAQ section (#82)
+- ONBOARDING.md link in README navigation bar (#87)
+
+### Changed
+
+- Upgrade GitHub Actions to Node.js 24: checkout v4→v5, github-script v7→v8 (#80)
+- Update CLAUDE.md Architecture section to include scripts/ and workflows (#89)
+- Update CLAUDE.md Testing section with lint and install script references (#89)
+
 ## [1.3.0] - 2026-03-27
 
 ### Added
@@ -107,6 +125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CONTRIBUTING.md contribution guidelines
 - GitHub issue and PR templates
 
+[1.4.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.0.4...v1.1.0
