@@ -25,9 +25,10 @@ When installed, Claude Code reads SKILL.md and enforces its rules during git ope
 ## How to Install and Test Locally
 
 ```bash
-# 1. Copy the skill to Claude Code's skill directory
-mkdir -p ~/.claude/skills/git-workflow
-cp SKILL.md ~/.claude/skills/git-workflow/SKILL.md
+# 1. Install using the platform-specific script (creates a symlink)
+./scripts/install_linux.sh     # Linux
+./scripts/install_macos.sh     # macOS
+.\scripts\install_windows.ps1  # Windows (PowerShell)
 
 # 2. Start a new Claude Code session
 claude
@@ -38,6 +39,8 @@ claude
 #    - "Open a PR"
 #    Verify Claude follows the workflow rules.
 ```
+
+> **Tip:** The install script creates a symlink, so the skill auto-syncs when you pull new changes. No need to re-copy after updates.
 
 ## How the Skill Works
 
@@ -79,3 +82,53 @@ Run `./scripts/lint.sh` to verify consistency.
 - **Version bumps happen on release branches only** — don't bump versions in feature/fix branches.
 - **Always pull before branching** — `git pull origin develop` before `git checkout -b` to avoid stale forks.
 - **No AI co-author signatures** — never add `Co-Authored-By` lines to commits in this repo.
+
+## Worked Example: Contributing a Bug Fix
+
+Here's a complete walkthrough of fixing a typo in SKILL.md:
+
+```bash
+# 1. Open an issue on GitHub: "fix: typo in Troubleshooting section"
+#    Note the issue number (e.g., #99)
+
+# 2. Create your branch
+git checkout develop
+git pull origin develop
+git checkout -b fix/99-troubleshooting-typo
+
+# 3. Make the fix in SKILL.md, then commit
+git add SKILL.md
+git commit -m "fix: correct typo in Troubleshooting section"
+
+# 4. Run the linter
+./scripts/lint.sh
+
+# 5. Push and open a PR
+git push -u origin fix/99-troubleshooting-typo
+gh pr create --base develop \
+  --title "fix: correct typo in Troubleshooting section (#99)" \
+  --body "Closes #99"
+
+# 6. After review and merge, clean up
+git checkout develop
+git pull origin develop
+git fetch --prune
+git branch -d fix/99-troubleshooting-typo
+```
+
+## FAQ
+
+**Can I use this skill with other AI assistants?**
+The skill is written for Claude Code specifically. The YAML frontmatter and activation keywords are Claude Code conventions. Other assistants would need their own format, but the workflow rules themselves are universal.
+
+**What if my project doesn't use Gitflow?**
+This skill enforces Gitflow. If your project uses GitHub Flow or trunk-based development, this skill isn't the right fit. See the [README comparison table](README.md#why-this-workflow) for guidance on when Gitflow makes sense.
+
+**Do I need all the files or just SKILL.md?**
+Users only need `SKILL.md` — it's the complete, self-contained skill. All other files (README, CONTRIBUTING, etc.) are for contributors to this repo.
+
+**How do I test if my SKILL.md change works?**
+Install the updated skill, start a fresh Claude Code session, and ask Claude to perform the git operation your change affects. There are no automated tests — verification is manual.
+
+**Why are there no automated tests?**
+The skill is a natural-language specification interpreted by an LLM. Traditional unit tests can't verify that Claude follows the rules correctly. The lint script validates structure, but behavioral testing requires a live Claude Code session.
