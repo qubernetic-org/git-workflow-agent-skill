@@ -2,6 +2,7 @@
 
 # Git Workflow — Claude Code Skill
 
+[![Lint](https://github.com/qubernetic-org/git-workflow-agent-skill/actions/workflows/lint.yml/badge.svg)](https://github.com/qubernetic-org/git-workflow-agent-skill/actions/workflows/lint.yml)
 [![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-7c3aed.svg)](https://claude.ai/code)
