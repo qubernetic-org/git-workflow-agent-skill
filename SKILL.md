@@ -603,3 +603,68 @@ git cherry-pick <commit-hash>
 ```
 
 > **Warning:** Cherry-picking duplicates commits. Prefer merging or back-merging when possible. Use cherry-pick only for isolated, urgent fixes.
+
+### "I created a branch from main instead of develop"
+
+```bash
+# If no commits yet — just recreate from the correct base
+git checkout develop
+git pull origin develop
+git checkout -b feature/<issue>-<slug>
+
+# If you already have commits — rebase them onto develop
+git rebase --onto develop main feature/<issue>-<slug>
+```
+
+### "My PR has merge conflicts"
+
+```bash
+# Merge the target branch into your feature branch
+git checkout feature/<issue>-<slug>
+git merge develop
+
+# Resolve conflicts in your editor, then:
+git add <resolved-files>
+git commit   # accept the merge commit message
+
+# Push the resolution
+git push origin feature/<issue>-<slug>
+```
+
+> **Note:** Never rebase a branch that's already pushed or has an open PR. Use merge to incorporate upstream changes.
+
+### "I accidentally deleted a branch before it was merged"
+
+```bash
+# Find the branch tip in reflog
+git reflog show --all | grep <branch-name>
+
+# Recreate the branch from the last known commit
+git checkout -b <branch-name> <commit-hash>
+git push -u origin <branch-name>
+```
+
+### "I committed secrets or credentials"
+
+```bash
+# Remove the file from history (requires git-filter-repo)
+git filter-repo --path <secret-file> --invert-paths
+
+# Force-push all affected branches (coordinate with team first)
+git push --force-with-lease origin <branch>
+```
+
+> **Critical:** After removing from git history, you must also:
+> 1. **Rotate the exposed credentials immediately** — assume they are compromised
+> 2. **Check GitHub's push protection** — enable secret scanning if not already active
+> 3. Force-push is normally forbidden, but this is a security exception
+
+### "I merged the wrong branch into develop or main"
+
+```bash
+# Revert the merge commit (use -m 1 to keep the mainline parent)
+git revert -m 1 <merge-commit-hash>
+git push origin <branch>
+```
+
+> **Note:** Reverting a merge makes Git think those changes were already applied. If you need to re-merge the branch later, you must first revert the revert.
