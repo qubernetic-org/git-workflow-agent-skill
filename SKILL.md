@@ -172,7 +172,9 @@ Atomic commits on branch
     ↓
 PR opened with Conventional Commits title
     ↓
-Review + merge (--no-ff)
+Review + test plan verified (check off items in PR description)
+    ↓
+Merge (--no-ff)
     ↓
 Issue closed (manually or auto-closed — see note below)
     ↓
@@ -185,7 +187,8 @@ Branch deleted (remote + local)
 2. **One PR per issue** — the PR closes exactly one issue
 3. **PR title** follows Conventional Commits format: `<type>(<scope>): <description> (#<issue>)` — e.g., `feat(auth): add OAuth2 login flow (#42)`
 4. **PR body** references the issue: `Closes #42`
-5. **Branch is deleted** after merge — both remote (enable GitHub's "Automatically delete head branches") and local (`git fetch --prune && git branch -d <branch>`)
+5. **Test plan verified before merge** — check off each item (`- [x]`) in the PR description as it passes. This makes test progress visible to reviewers and serves as an audit trail.
+6. **Branch is deleted** after merge — both remote (enable GitHub's "Automatically delete head branches") and local (`git fetch --prune && git branch -d <branch>`)
 
 ### GitHub Auto-Close Limitation
 
