@@ -54,6 +54,18 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 | `hotfix/<issue>-<slug>` | `main` | `main` AND `develop` | Urgent production fixes |
 | `release/<version>` | `develop` | `main` AND `develop` | Release preparation |
 
+### Sync Before Branching
+
+**Always pull the latest base branch before creating a new branch.** Without this, sequential branches fork from the same stale commit and miss previously merged work.
+
+```bash
+git checkout develop
+git pull origin develop          # ← mandatory before branching
+git checkout -b feature/42-slug
+```
+
+This applies to every branch type: `feature/*` and `fix/*` pull `develop`, `hotfix/*` pulls `main`, `release/*` pulls `develop`.
+
 ### Merge Strategy
 
 - **Always use `--no-ff`** for merges into `main` and `develop` — this preserves the branch topology and groups commits visually
@@ -151,6 +163,8 @@ feat!: drop support for Node 16
 
 ```
 Issue created (including release issues)
+    ↓
+Checkout and pull base branch (git pull origin develop/main)
     ↓
 Branch created from issue (feature/42-slug, fix/17-slug, etc.)
     ↓
@@ -253,6 +267,7 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
 
 2. Create release branch from develop:
    git checkout develop
+   git pull origin develop
    git checkout -b release/1.2.0
 
 3. On release branch:
@@ -287,6 +302,7 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
 
 2. Create hotfix branch from main:
    git checkout main
+   git pull origin main
    git checkout -b hotfix/89-auth-crash
 
 3. Fix the issue with atomic commits
