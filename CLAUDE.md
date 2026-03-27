@@ -15,7 +15,8 @@ This repo follows the same Gitflow workflow described in SKILL.md. Apply the ski
 ## Architecture
 
 - **SKILL.md** — The entire skill definition. Self-contained installable artifact. Contains YAML frontmatter (`name`, `description`, `version`, `metadata`) followed by the complete workflow specification: branch model, commit format, issue-driven flow, semantic versioning, release process, and forbidden operations.
-- **`.github/`** — PR template and issue templates (bug report, feature request).
+- **`scripts/`** — Tooling: `lint.sh` (structural validation of SKILL.md), `install_linux.sh`, `install_macos.sh`, `install_windows.ps1` (platform-specific install/uninstall via symlink).
+- **`.github/`** — PR template, issue templates (bug report, feature request), and GitHub Actions workflows (`lint.yml`, `close-linked-issues.yml`).
 
 ## Key Invariants
 
@@ -33,12 +34,11 @@ When modifying SKILL.md, preserve these non-negotiable rules:
 
 - SKILL.md must remain **self-contained** — it is the installable artifact
 - The `description` field in frontmatter controls when Claude Code triggers the skill — keep trigger keywords updated if scope changes
-- Keep version in sync between frontmatter `version`, `metadata.version`, and CHANGELOG.md
+- Keep version in sync between frontmatter `version`, `metadata.version`, README.md badge, and CHANGELOG.md — run `./scripts/lint.sh` to verify
 
 ## Testing Changes
 
-No automated tests. Manual verification:
-
-1. Copy updated `SKILL.md` to `~/.claude/skills/git-workflow/SKILL.md`
-2. Start a new Claude Code session
-3. Ask Claude to perform git operations and verify it follows the workflow
+1. Run the linter: `./scripts/lint.sh`
+2. Install the updated skill: `./scripts/install_linux.sh` (or platform equivalent)
+3. Start a new Claude Code session
+4. Ask Claude to perform git operations and verify it follows the workflow
