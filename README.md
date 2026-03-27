@@ -205,6 +205,58 @@ See [SKILL.md](SKILL.md) for the full specification including commit types, brea
 - You have a single developer with no parallel work streams
 - Your project doesn't use semantic versioning
 
+## Integration with Git Hooks and CI Tools
+
+The skill enforces workflow rules through Claude Code, but you can add mechanical enforcement for your team with these tools:
+
+### Commit Message Validation (commitlint)
+
+```bash
+npm install --save-dev @commitlint/{cli,config-conventional}
+```
+
+```js
+// commitlint.config.js
+module.exports = {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'type-enum': [2, 'always', [
+      'feat', 'fix', 'docs', 'chore', 'refactor',
+      'test', 'style', 'perf', 'ci', 'build', 'revert'
+    ]],
+    'subject-case': [2, 'always', 'lower-case'],
+    'subject-full-stop': [2, 'never', '.'],
+    'header-max-length': [2, 'always', 72],
+  },
+};
+```
+
+### Git Hooks (husky)
+
+```bash
+npm install --save-dev husky
+npx husky init
+echo "npx --no -- commitlint --edit \$1" > .husky/commit-msg
+```
+
+### Branch Name Validation (CI)
+
+Add to your GitHub Actions workflow:
+
+```yaml
+- name: Validate branch name
+  if: github.event_name == 'pull_request'
+  run: |
+    BRANCH="${{ github.head_ref }}"
+    PATTERN="^(feature|fix|docs|hotfix|release)/[a-z0-9-]+$"
+    if [[ ! "$BRANCH" =~ $PATTERN ]]; then
+      echo "::error::Branch '$BRANCH' doesn't match pattern: $PATTERN"
+      exit 1
+    fi
+```
+
+> **Note:** These tools complement the skill — they catch mechanical errors (typos in commit types, wrong branch names) while Claude Code handles the higher-level workflow logic (correct base branch, issue traceability, release process).
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [ONBOARDING.md](ONBOARDING.md) for a new contributor guide.
