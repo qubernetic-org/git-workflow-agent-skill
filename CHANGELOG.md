@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-03-27
+
+### Added
+
+- GitHub Actions workflow to auto-close issues on non-default branch merges (#44)
+- Auto-close workflow reference and guidance in SKILL.md (#44)
+- Test plan checklist verification step to Issue-Driven Workflow (#52)
+- Pre-release Tags section with alpha/beta/rc guidance and SemVer precedence (#40)
+- SECURITY.md for vulnerability reporting (#42)
+- CODE_OF_CONDUCT.md using Contributor Covenant v2.1 (#43)
+
+### Fixed
+
+- Enforce `git pull` before creating new branches to prevent stale forks (#35)
+- Add missing commit types (`style`, `ci`, `build`, `revert`) to Decision Guide (#38)
+- Add `bash` language tags to fenced code blocks for syntax highlighting (#39)
+- Update README.md version badge from 1.0.2 to 1.0.4 (#37)
+
 ## [1.0.4] - 2026-03-18
 
 ### Changed
@@ -59,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CONTRIBUTING.md contribution guidelines
 - GitHub issue and PR templates
 
+[1.1.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.0.1...v1.0.2
