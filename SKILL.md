@@ -1,11 +1,11 @@
 ---
 name: git-workflow
 description: "Enforce a strict Gitflow-based workflow with conventional commits, semantic versioning, and issue-driven branching. Use when the user asks to commit, create a branch, open a PR, tag a release, or perform any git operation. Also applies when mentions 'commit', 'branch', 'merge', 'release', 'hotfix', 'gitflow', 'conventional commit', 'semantic versioning', or 'semver'."
-version: 1.1.0
+version: 1.2.0
 license: MIT
 metadata:
   author: Qubernetic
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Git Workflow Skill
@@ -532,3 +532,74 @@ Follow [Keep a Changelog](https://keepachangelog.com/):
 | Creating a release branch | Bump version on release branch |
 | Merging hotfix to main | Bump PATCH version on hotfix branch |
 | Breaking change anywhere | MAJOR bump at release time |
+
+---
+
+## Troubleshooting
+
+### "I accidentally committed directly to main or develop"
+
+```bash
+# Undo the last commit, keeping changes staged
+git reset --soft HEAD~1
+
+# Create the correct branch and move the changes there
+git checkout -b feature/<issue>-<slug>
+git commit -m "<type>: <description>"
+
+# Reset the protected branch to its remote state
+git checkout main   # or develop
+git reset --hard origin/main   # or origin/develop
+```
+
+### "I forgot to pull before branching and my branch is stale"
+
+```bash
+# If the branch is NOT yet pushed — rebase onto latest base
+git checkout develop && git pull origin develop
+git checkout feature/<issue>-<slug>
+git rebase develop
+
+# If the branch IS already pushed — merge base into your branch
+git checkout feature/<issue>-<slug>
+git merge develop
+```
+
+### "I squash-merged instead of merge-committing"
+
+The atomic commit history is lost. To preserve traceability:
+
+```bash
+# Revert the squash merge
+git revert <squash-merge-commit-hash>
+
+# Re-merge correctly with --no-ff
+git merge --no-ff <branch>
+```
+
+If the branch is already deleted, recreate it from the squash commit, revert, and re-merge.
+
+### "I force-pushed to a shared branch"
+
+```bash
+# Ask collaborators to save their local work
+# Then restore the branch from reflog
+git reflog show <branch>
+git reset --hard <branch>@{N}   # N = the entry before the force-push
+git push --force-with-lease origin <branch>
+```
+
+Coordinate with your team — they may need to `git fetch && git reset --hard origin/<branch>`.
+
+### "I need to cherry-pick a commit to another branch"
+
+```bash
+# Find the commit hash
+git log --oneline <source-branch>
+
+# Apply it to the target branch
+git checkout <target-branch>
+git cherry-pick <commit-hash>
+```
+
+> **Warning:** Cherry-picking duplicates commits. Prefer merging or back-merging when possible. Use cherry-pick only for isolated, urgent fixes.
