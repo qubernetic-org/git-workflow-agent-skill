@@ -180,6 +180,30 @@ feat!: drop support for Node 16
 
 See [SKILL.md](SKILL.md) for the full specification including commit types, breaking change conventions, versioning rules, release processes, and the complete forbidden operations list.
 
+## Why This Workflow?
+
+| Aspect | This Skill (Gitflow) | GitHub Flow | Trunk-Based |
+|--------|---------------------|-------------|-------------|
+| **Branches** | `main` + `develop` + typed branches | `main` + feature branches | `main` only |
+| **Releases** | Explicit release branches with version bump | Deploy from main on merge | Continuous deploy from main |
+| **Commit style** | Conventional Commits (enforced) | Free-form | Free-form |
+| **Merge strategy** | `--no-ff` merge commits (preserves topology) | Squash merge (flat history) | Squash or rebase |
+| **Traceability** | Issue → branch → PR → changelog | PR-based | Commit-based |
+| **Best for** | Versioned releases, libraries, skills, APIs | SaaS with continuous deploy | Small teams, rapid iteration |
+
+### When to use Gitflow
+
+- You ship **discrete versions** (v1.0, v1.1, v2.0) rather than continuous deploys
+- You need a **clear audit trail** from issue to release
+- Multiple features develop **in parallel** with different release timelines
+- You want **hotfix capability** without disrupting in-progress work
+
+### When NOT to use Gitflow
+
+- You deploy to production on every merge (GitHub Flow is simpler)
+- You have a single developer with no parallel work streams
+- Your project doesn't use semantic versioning
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
