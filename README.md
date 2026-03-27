@@ -2,7 +2,8 @@
 
 # Git Workflow — Claude Code Skill
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](CHANGELOG.md)
+[![Lint](https://github.com/qubernetic-org/git-workflow-agent-skill/actions/workflows/lint.yml/badge.svg)](https://github.com/qubernetic-org/git-workflow-agent-skill/actions/workflows/lint.yml)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-7c3aed.svg)](https://claude.ai/code)
 [![Conventional Commits](https://img.shields.io/badge/commits-conventional-fe5196.svg?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
@@ -11,7 +12,7 @@
 
 A Claude Code skill that enforces a disciplined Gitflow-based development workflow with conventional commits, semantic versioning, and issue-driven branching.
 
-[Installation](#installation) · [Usage](#usage) · [What It Enforces](#what-it-enforces) · [Contributing](CONTRIBUTING.md)
+[Installation](#installation) · [Usage](#usage) · [What It Enforces](#what-it-enforces) · [Contributing](CONTRIBUTING.md) · [Onboarding](ONBOARDING.md)
 
 </div>
 
@@ -180,9 +181,85 @@ feat!: drop support for Node 16
 
 See [SKILL.md](SKILL.md) for the full specification including commit types, breaking change conventions, versioning rules, release processes, and the complete forbidden operations list.
 
+## Why This Workflow?
+
+| Aspect | This Skill (Gitflow) | GitHub Flow | Trunk-Based |
+|--------|---------------------|-------------|-------------|
+| **Branches** | `main` + `develop` + typed branches | `main` + feature branches | `main` only |
+| **Releases** | Explicit release branches with version bump | Deploy from main on merge | Continuous deploy from main |
+| **Commit style** | Conventional Commits (enforced) | Free-form | Free-form |
+| **Merge strategy** | `--no-ff` merge commits (preserves topology) | Squash merge (flat history) | Squash or rebase |
+| **Traceability** | Issue → branch → PR → changelog | PR-based | Commit-based |
+| **Best for** | Versioned releases, libraries, skills, APIs | SaaS with continuous deploy | Small teams, rapid iteration |
+
+### When to use Gitflow
+
+- You ship **discrete versions** (v1.0, v1.1, v2.0) rather than continuous deploys
+- You need a **clear audit trail** from issue to release
+- Multiple features develop **in parallel** with different release timelines
+- You want **hotfix capability** without disrupting in-progress work
+
+### When NOT to use Gitflow
+
+- You deploy to production on every merge (GitHub Flow is simpler)
+- You have a single developer with no parallel work streams
+- Your project doesn't use semantic versioning
+
+## Integration with Git Hooks and CI Tools
+
+The skill enforces workflow rules through Claude Code, but you can add mechanical enforcement for your team with these tools:
+
+### Commit Message Validation (commitlint)
+
+```bash
+npm install --save-dev @commitlint/{cli,config-conventional}
+```
+
+```js
+// commitlint.config.js
+module.exports = {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'type-enum': [2, 'always', [
+      'feat', 'fix', 'docs', 'chore', 'refactor',
+      'test', 'style', 'perf', 'ci', 'build', 'revert'
+    ]],
+    'subject-case': [2, 'always', 'lower-case'],
+    'subject-full-stop': [2, 'never', '.'],
+    'header-max-length': [2, 'always', 72],
+  },
+};
+```
+
+### Git Hooks (husky)
+
+```bash
+npm install --save-dev husky
+npx husky init
+echo "npx --no -- commitlint --edit \$1" > .husky/commit-msg
+```
+
+### Branch Name Validation (CI)
+
+Add to your GitHub Actions workflow:
+
+```yaml
+- name: Validate branch name
+  if: github.event_name == 'pull_request'
+  run: |
+    BRANCH="${{ github.head_ref }}"
+    PATTERN="^(feature|fix|docs|hotfix|release)/[a-z0-9-]+$"
+    if [[ ! "$BRANCH" =~ $PATTERN ]]; then
+      echo "::error::Branch '$BRANCH' doesn't match pattern: $PATTERN"
+      exit 1
+    fi
+```
+
+> **Note:** These tools complement the skill — they catch mechanical errors (typos in commit types, wrong branch names) while Claude Code handles the higher-level workflow logic (correct base branch, issue traceability, release process).
+
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [ONBOARDING.md](ONBOARDING.md) for a new contributor guide.
 
 ## License
 
