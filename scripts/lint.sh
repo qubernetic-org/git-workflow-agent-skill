@@ -103,7 +103,7 @@ while IFS= read -r line; do
     heading_ok=false
   fi
   prev_level=$level
-done < <(grep -E '^#{1,6} ' "$SKILL")
+done < <(awk '/^```/{inside=!inside; next} !inside && /^#{1,6} /' "$SKILL")
 
 if $heading_ok; then
   pass "Heading hierarchy is consistent (no skipped levels)"
