@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-03-27
+
+### Added
+
+- Install script for Linux — `scripts/install_linux.sh` (#68)
+- Install script for macOS — `scripts/install_macos.sh` (#69)
+- Install script for Windows — `scripts/install_windows.ps1` (#70)
+
+### Changed
+
+- Rename `install.sh` to `install_linux.sh` for consistent cross-platform naming (#69)
+- Update README installation section with platform-specific scripts and uninstall instructions (#74)
+- Improve CONTRIBUTING.md with development workflow and cross-platform lint guide (#63)
+
 ## [1.2.0] - 2026-03-27
 
 ### Added
@@ -93,6 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CONTRIBUTING.md contribution guidelines
 - GitHub issue and PR templates
 
+[1.3.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/qubernetic-org/git-workflow-agent-skill/compare/v1.0.3...v1.0.4

@@ -2,7 +2,7 @@
 
 # Git Workflow — Claude Code Skill
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-7c3aed.svg)](https://claude.ai/code)
 [![Conventional Commits](https://img.shields.io/badge/commits-conventional-fe5196.svg?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
@@ -19,11 +19,56 @@ A Claude Code skill that enforces a disciplined Gitflow-based development workfl
 
 ## Installation
 
-Copy the `SKILL.md` file to your global Claude Code skills directory:
+Clone the repo and run the install script for your platform. The script creates a **symlink**, so the skill stays in sync with the repo automatically.
+
+### Linux
+
+```bash
+git clone https://github.com/qubernetic-org/git-workflow-agent-skill.git
+cd git-workflow-agent-skill
+./scripts/install_linux.sh
+```
+
+### macOS
+
+```bash
+git clone https://github.com/qubernetic-org/git-workflow-agent-skill.git
+cd git-workflow-agent-skill
+./scripts/install_macos.sh
+```
+
+### Windows (PowerShell)
+
+```powershell
+git clone https://github.com/qubernetic-org/git-workflow-agent-skill.git
+cd git-workflow-agent-skill
+.\scripts\install_windows.ps1
+```
+
+> **Note:** Windows symlinks require Developer Mode enabled or an elevated terminal. The script falls back to a file copy if symlinks are unavailable.
+
+### Uninstall
+
+```bash
+# Linux
+./scripts/install_linux.sh --uninstall
+
+# macOS
+./scripts/install_macos.sh --uninstall
+```
+
+```powershell
+# Windows
+.\scripts\install_windows.ps1 -Uninstall
+```
+
+### Manual Installation
+
+If you prefer not to use the scripts:
 
 ```bash
 mkdir -p ~/.claude/skills/git-workflow
-cp SKILL.md ~/.claude/skills/git-workflow/SKILL.md
+ln -s "$(pwd)/SKILL.md" ~/.claude/skills/git-workflow/SKILL.md
 ```
 
 The skill will be automatically discovered on the next Claude Code session.
