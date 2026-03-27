@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Install or uninstall the git-workflow skill for Claude Code (Linux).
+# Install or uninstall the git-workflow skill for Claude Code (macOS).
 # Creates a symlink so the skill stays in sync with the repo.
 #
 # Usage:
-#   ./scripts/install_linux.sh              # Install
-#   ./scripts/install_linux.sh --uninstall  # Uninstall
+#   ./scripts/install_macos.sh              # Install
+#   ./scripts/install_macos.sh --uninstall  # Uninstall
 
 set -euo pipefail
 
@@ -17,6 +17,17 @@ SOURCE="$REPO_ROOT/SKILL.md"
 info()  { printf "  \033[34mℹ\033[0m %s\n" "$1"; }
 pass()  { printf "  \033[32m✓\033[0m %s\n" "$1"; }
 fail()  { printf "  \033[31m✗\033[0m %s\n" "$1"; }
+
+# macOS readlink does not support -f; resolve symlink manually
+resolve_link() {
+  local target="$1"
+  while [[ -L "$target" ]]; do
+    local dir="$(cd "$(dirname "$target")" && pwd)"
+    target="$(readlink "$target")"
+    [[ "$target" != /* ]] && target="$dir/$target"
+  done
+  echo "$(cd "$(dirname "$target")" && pwd)/$(basename "$target")"
+}
 
 uninstall() {
   if [[ -L "$SKILL_FILE" ]]; then
@@ -42,7 +53,7 @@ install() {
 
   # Check if already installed
   if [[ -L "$SKILL_FILE" ]]; then
-    current_target="$(readlink -f "$SKILL_FILE")"
+    current_target="$(resolve_link "$SKILL_FILE")"
     if [[ "$current_target" == "$SOURCE" ]]; then
       pass "Already installed (symlink points to $SOURCE)"
       exit 0
