@@ -1,11 +1,11 @@
 ---
 name: git-workflow
 description: "Enforce a strict Gitflow-based workflow with conventional commits, semantic versioning, and issue-driven branching. Use when the user asks to commit, create a branch, open a PR, tag a release, or perform any git operation. Also applies when mentions 'commit', 'branch', 'merge', 'release', 'hotfix', 'gitflow', 'conventional commit', 'semantic versioning', or 'semver'."
-version: 1.0.4
+version: 1.1.0
 license: MIT
 metadata:
   author: Qubernetic
-  version: 1.0.4
+  version: 1.1.0
 ---
 
 # Git Workflow Skill
@@ -53,6 +53,18 @@ Enforce a disciplined Gitflow-based development workflow. Every git operation fo
 | `fix/<issue>-<slug>` | `develop` | `develop` | Bug fixes on develop |
 | `hotfix/<issue>-<slug>` | `main` | `main` AND `develop` | Urgent production fixes |
 | `release/<version>` | `develop` | `main` AND `develop` | Release preparation |
+
+### Sync Before Branching
+
+**Always pull the latest base branch before creating a new branch.** Without this, sequential branches fork from the same stale commit and miss previously merged work.
+
+```bash
+git checkout develop
+git pull origin develop          # ← mandatory before branching
+git checkout -b feature/42-slug
+```
+
+This applies to every branch type: `feature/*` and `fix/*` pull `develop`, `hotfix/*` pulls `main`, `release/*` pulls `develop`.
 
 ### Merge Strategy
 
@@ -152,13 +164,17 @@ feat!: drop support for Node 16
 ```
 Issue created (including release issues)
     ↓
+Checkout and pull base branch (git pull origin develop/main)
+    ↓
 Branch created from issue (feature/42-slug, fix/17-slug, etc.)
     ↓
 Atomic commits on branch
     ↓
 PR opened with Conventional Commits title
     ↓
-Review + merge (--no-ff)
+Review + test plan verified (check off items in PR description)
+    ↓
+Merge (--no-ff)
     ↓
 Issue closed (manually or auto-closed — see note below)
     ↓
@@ -171,7 +187,8 @@ Branch deleted (remote + local)
 2. **One PR per issue** — the PR closes exactly one issue
 3. **PR title** follows Conventional Commits format: `<type>(<scope>): <description> (#<issue>)` — e.g., `feat(auth): add OAuth2 login flow (#42)`
 4. **PR body** references the issue: `Closes #42`
-5. **Branch is deleted** after merge — both remote (enable GitHub's "Automatically delete head branches") and local (`git fetch --prune && git branch -d <branch>`)
+5. **Test plan verified before merge** — check off each item (`- [x]`) in the PR description as it passes. This makes test progress visible to reviewers and serves as an audit trail.
+6. **Branch is deleted** after merge — both remote (enable GitHub's "Automatically delete head branches") and local (`git fetch --prune && git branch -d <branch>`)
 
 ### GitHub Auto-Close Limitation
 
@@ -179,9 +196,104 @@ Branch deleted (remote + local)
 >
 > **Workarounds:**
 > 1. **Close manually** after merging to `develop` — use `gh issue close <number>` or close via GitHub UI
-> 2. **Use GitHub Actions** — add a workflow that auto-closes the referenced issue when a PR is merged to `develop`
+> 2. **Use GitHub Actions (recommended)** — add a workflow that auto-closes the referenced issue when a PR is merged to any non-default branch. See the reference implementation below.
 >
-> Always include `Closes #X` in PR bodies for traceability, even though it won't trigger auto-close on `develop` merges.
+> Always include `Closes #X` in PR bodies for traceability, even when targeting non-default branches.
+
+#### Recommended: Auto-Close Workflow
+
+Add `.github/workflows/close-linked-issues.yml` to your repository. This workflow triggers on every merged PR that targets a non-default branch and closes linked issues using two strategies:
+
+1. **Keyword parsing** — scans PR title and body for `Closes #X`, `Fixes #X`, `Resolves #X` (case-insensitive)
+2. **GraphQL API** — queries GitHub's linked issues (catches issues linked via the UI sidebar, not just keywords)
+
+```yaml
+name: Close linked issues on merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  close-linked-issues:
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Close linked issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prTitle = context.payload.pull_request.title || '';
+            const prNumber = context.payload.pull_request.number;
+            const baseBranch = context.payload.pull_request.base.ref;
+
+            const closingKeywords = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
+            const issueNumbers = new Set();
+
+            for (const text of [prBody, prTitle]) {
+              let match;
+              while ((match = closingKeywords.exec(text)) !== null) {
+                issueNumbers.add(parseInt(match[1], 10));
+              }
+            }
+
+            try {
+              const query = `query($owner: String!, $repo: String!, $pr: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pr) {
+                    closingIssuesReferences(first: 50) {
+                      nodes { number, state, repository { nameWithOwner } }
+                    }
+                  }
+                }
+              }`;
+              const result = await github.graphql(query, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pr: prNumber,
+              });
+              const linkedIssues = result.repository.pullRequest.closingIssuesReferences.nodes;
+              const expectedRepo = `${context.repo.owner}/${context.repo.repo}`;
+              for (const issue of linkedIssues) {
+                if (issue.repository.nameWithOwner === expectedRepo && issue.state === 'OPEN') {
+                  issueNumbers.add(issue.number);
+                }
+              }
+            } catch (err) {
+              console.log(`GraphQL query failed (non-fatal): ${err.message}`);
+            }
+
+            if (issueNumbers.size === 0) return;
+
+            for (const issueNumber of issueNumbers) {
+              try {
+                const { data: issue } = await github.rest.issues.get({
+                  ...context.repo, issue_number: issueNumber,
+                });
+                if (issue.state === 'closed') continue;
+
+                await github.rest.issues.createComment({
+                  ...context.repo, issue_number: issueNumber,
+                  body: `Closed by #${prNumber} (merged into \`${baseBranch}\`).`,
+                });
+                await github.rest.issues.update({
+                  ...context.repo, issue_number: issueNumber,
+                  state: 'closed', state_reason: 'completed',
+                });
+              } catch (err) {
+                console.error(`Failed to close #${issueNumber}: ${err.message}`);
+              }
+            }
+```
+
+> **Note:** The workflow requires `issues: write` and `pull-requests: read` permissions. No secrets beyond the default `GITHUB_TOKEN` are needed.
 
 ### Issue Labels
 
@@ -207,8 +319,17 @@ Branch deleted (remote + local)
 
 ### Pre-release Tags
 
-- Release candidates: `1.2.0-rc.1`, `1.2.0-rc.2`
-- Beta: `1.2.0-beta.1`
+Use pre-release suffixes when a version needs validation before becoming a stable release:
+
+| Suffix | When to use | Example |
+|--------|-------------|---------|
+| `-alpha.N` | Internal testing, incomplete features | `1.2.0-alpha.1` |
+| `-beta.N` | Feature-complete, external testing | `1.2.0-beta.1` |
+| `-rc.N` | Release candidate, final validation | `1.2.0-rc.1` |
+
+Pre-release versions are tagged and published from the `release/*` branch before the final stable tag. Increment the suffix number for successive builds: `1.2.0-rc.1` → `1.2.0-rc.2`. The stable release (`1.2.0`) replaces the last pre-release when ready.
+
+> **Note:** Pre-release tags follow SemVer precedence: `1.2.0-alpha.1 < 1.2.0-beta.1 < 1.2.0-rc.1 < 1.2.0`.
 
 ### Version Locations
 
@@ -223,7 +344,7 @@ Keep version in sync across:
 
 The initial setup is the **only** allowed direct commit to `main`. This is a one-time exception to bootstrap the Gitflow structure.
 
-```
+```bash
 1. Create empty repo on GitHub
 
 2. Clone and make the first commit directly to main:
@@ -248,11 +369,12 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
 
 ### Standard Release
 
-```
+```bash
 1. Create a "Release v1.2.0" issue (label: chore)
 
 2. Create release branch from develop:
    git checkout develop
+   git pull origin develop
    git checkout -b release/1.2.0
 
 3. On release branch:
@@ -282,11 +404,12 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
 
 ### Hotfix Release
 
-```
+```bash
 1. Create hotfix issue (label: hotfix)
 
 2. Create hotfix branch from main:
    git checkout main
+   git pull origin main
    git checkout -b hotfix/89-auth-crash
 
 3. Fix the issue with atomic commits
@@ -396,6 +519,10 @@ Follow [Keep a Changelog](https://keepachangelog.com/):
 | Restructured code without behavior change | `refactor` |
 | Added or updated tests | `test` |
 | Improved performance | `perf` |
+| Formatting, whitespace (no logic change) | `style` |
+| CI/CD pipeline changes | `ci` |
+| Build system or dependency changes | `build` |
+| Reverting a previous commit | `revert` |
 
 ### "Do I bump the version?"
 
