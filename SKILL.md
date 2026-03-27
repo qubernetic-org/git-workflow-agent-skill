@@ -193,9 +193,104 @@ Branch deleted (remote + local)
 >
 > **Workarounds:**
 > 1. **Close manually** after merging to `develop` — use `gh issue close <number>` or close via GitHub UI
-> 2. **Use GitHub Actions** — add a workflow that auto-closes the referenced issue when a PR is merged to `develop`
+> 2. **Use GitHub Actions (recommended)** — add a workflow that auto-closes the referenced issue when a PR is merged to any non-default branch. See the reference implementation below.
 >
-> Always include `Closes #X` in PR bodies for traceability, even though it won't trigger auto-close on `develop` merges.
+> Always include `Closes #X` in PR bodies for traceability, even when targeting non-default branches.
+
+#### Recommended: Auto-Close Workflow
+
+Add `.github/workflows/close-linked-issues.yml` to your repository. This workflow triggers on every merged PR that targets a non-default branch and closes linked issues using two strategies:
+
+1. **Keyword parsing** — scans PR title and body for `Closes #X`, `Fixes #X`, `Resolves #X` (case-insensitive)
+2. **GraphQL API** — queries GitHub's linked issues (catches issues linked via the UI sidebar, not just keywords)
+
+```yaml
+name: Close linked issues on merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  close-linked-issues:
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Close linked issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prTitle = context.payload.pull_request.title || '';
+            const prNumber = context.payload.pull_request.number;
+            const baseBranch = context.payload.pull_request.base.ref;
+
+            const closingKeywords = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
+            const issueNumbers = new Set();
+
+            for (const text of [prBody, prTitle]) {
+              let match;
+              while ((match = closingKeywords.exec(text)) !== null) {
+                issueNumbers.add(parseInt(match[1], 10));
+              }
+            }
+
+            try {
+              const query = `query($owner: String!, $repo: String!, $pr: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pr) {
+                    closingIssuesReferences(first: 50) {
+                      nodes { number, state, repository { nameWithOwner } }
+                    }
+                  }
+                }
+              }`;
+              const result = await github.graphql(query, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pr: prNumber,
+              });
+              const linkedIssues = result.repository.pullRequest.closingIssuesReferences.nodes;
+              const expectedRepo = `${context.repo.owner}/${context.repo.repo}`;
+              for (const issue of linkedIssues) {
+                if (issue.repository.nameWithOwner === expectedRepo && issue.state === 'OPEN') {
+                  issueNumbers.add(issue.number);
+                }
+              }
+            } catch (err) {
+              console.log(`GraphQL query failed (non-fatal): ${err.message}`);
+            }
+
+            if (issueNumbers.size === 0) return;
+
+            for (const issueNumber of issueNumbers) {
+              try {
+                const { data: issue } = await github.rest.issues.get({
+                  ...context.repo, issue_number: issueNumber,
+                });
+                if (issue.state === 'closed') continue;
+
+                await github.rest.issues.createComment({
+                  ...context.repo, issue_number: issueNumber,
+                  body: `Closed by #${prNumber} (merged into \`${baseBranch}\`).`,
+                });
+                await github.rest.issues.update({
+                  ...context.repo, issue_number: issueNumber,
+                  state: 'closed', state_reason: 'completed',
+                });
+              } catch (err) {
+                console.error(`Failed to close #${issueNumber}: ${err.message}`);
+              }
+            }
+```
+
+> **Note:** The workflow requires `issues: write` and `pull-requests: read` permissions. No secrets beyond the default `GITHUB_TOKEN` are needed.
 
 ### Issue Labels
 
