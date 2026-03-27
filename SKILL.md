@@ -332,7 +332,7 @@ Keep version in sync across:
 
 The initial setup is the **only** allowed direct commit to `main`. This is a one-time exception to bootstrap the Gitflow structure.
 
-```
+```bash
 1. Create empty repo on GitHub
 
 2. Clone and make the first commit directly to main:
@@ -357,7 +357,7 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
 
 ### Standard Release
 
-```
+```bash
 1. Create a "Release v1.2.0" issue (label: chore)
 
 2. Create release branch from develop:
@@ -392,7 +392,7 @@ The initial setup is the **only** allowed direct commit to `main`. This is a one
 
 ### Hotfix Release
 
-```
+```bash
 1. Create hotfix issue (label: hotfix)
 
 2. Create hotfix branch from main:
