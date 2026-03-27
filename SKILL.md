@@ -316,8 +316,17 @@ jobs:
 
 ### Pre-release Tags
 
-- Release candidates: `1.2.0-rc.1`, `1.2.0-rc.2`
-- Beta: `1.2.0-beta.1`
+Use pre-release suffixes when a version needs validation before becoming a stable release:
+
+| Suffix | When to use | Example |
+|--------|-------------|---------|
+| `-alpha.N` | Internal testing, incomplete features | `1.2.0-alpha.1` |
+| `-beta.N` | Feature-complete, external testing | `1.2.0-beta.1` |
+| `-rc.N` | Release candidate, final validation | `1.2.0-rc.1` |
+
+Pre-release versions are tagged and published from the `release/*` branch before the final stable tag. Increment the suffix number for successive builds: `1.2.0-rc.1` → `1.2.0-rc.2`. The stable release (`1.2.0`) replaces the last pre-release when ready.
+
+> **Note:** Pre-release tags follow SemVer precedence: `1.2.0-alpha.1 < 1.2.0-beta.1 < 1.2.0-rc.1 < 1.2.0`.
 
 ### Version Locations
 
