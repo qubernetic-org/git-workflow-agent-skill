@@ -11,7 +11,7 @@
 
 A Claude Code skill that enforces a disciplined Gitflow-based development workflow with conventional commits, semantic versioning, and issue-driven branching.
 
-[Installation](#installation) · [Usage](#usage) · [What It Enforces](#what-it-enforces) · [Contributing](CONTRIBUTING.md)
+[Installation](#installation) · [Usage](#usage) · [What It Enforces](#what-it-enforces) · [Contributing](CONTRIBUTING.md) · [Onboarding](ONBOARDING.md)
 
 </div>
 
@@ -206,7 +206,7 @@ See [SKILL.md](SKILL.md) for the full specification including commit types, brea
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [ONBOARDING.md](ONBOARDING.md) for a new contributor guide.
 
 ## License
 
