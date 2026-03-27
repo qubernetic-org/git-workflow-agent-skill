@@ -507,6 +507,10 @@ Follow [Keep a Changelog](https://keepachangelog.com/):
 | Restructured code without behavior change | `refactor` |
 | Added or updated tests | `test` |
 | Improved performance | `perf` |
+| Formatting, whitespace (no logic change) | `style` |
+| CI/CD pipeline changes | `ci` |
+| Build system or dependency changes | `build` |
+| Reverting a previous commit | `revert` |
 
 ### "Do I bump the version?"
 
