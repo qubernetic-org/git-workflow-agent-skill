@@ -2,7 +2,7 @@
 
 # Git Workflow — Claude Code Skill
 
-[![Lint](https://github.com/qubernetic-org/git-workflow-agent-skill/actions/workflows/lint.yml/badge.svg)](https://github.com/qubernetic-org/git-workflow-agent-skill/actions/workflows/lint.yml)
+[![Lint](https://github.com/qubernetic/git-workflow-agent-skill/actions/workflows/lint.yml/badge.svg)](https://github.com/qubernetic/git-workflow-agent-skill/actions/workflows/lint.yml)
 [![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-7c3aed.svg)](https://claude.ai/code)
@@ -25,7 +25,7 @@ Clone the repo and run the install script for your platform. The script creates 
 ### Linux
 
 ```bash
-git clone https://github.com/qubernetic-org/git-workflow-agent-skill.git
+git clone https://github.com/qubernetic/git-workflow-agent-skill.git
 cd git-workflow-agent-skill
 ./scripts/install_linux.sh
 ```
@@ -33,7 +33,7 @@ cd git-workflow-agent-skill
 ### macOS
 
 ```bash
-git clone https://github.com/qubernetic-org/git-workflow-agent-skill.git
+git clone https://github.com/qubernetic/git-workflow-agent-skill.git
 cd git-workflow-agent-skill
 ./scripts/install_macos.sh
 ```
@@ -41,7 +41,7 @@ cd git-workflow-agent-skill
 ### Windows (PowerShell)
 
 ```powershell
-git clone https://github.com/qubernetic-org/git-workflow-agent-skill.git
+git clone https://github.com/qubernetic/git-workflow-agent-skill.git
 cd git-workflow-agent-skill
 .\scripts\install_windows.ps1
 ```
@@ -263,4 +263,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [ONBOARDING.md](ONBOAR
 
 ## License
 
-[MIT](LICENSE) © [Qubernetic](https://github.com/qubernetic-org)
+[MIT](LICENSE) © [Qubernetic](https://github.com/qubernetic)

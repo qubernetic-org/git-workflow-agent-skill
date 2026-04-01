@@ -18,7 +18,7 @@ If you discover that the skill's instructions could cause any of the above, or a
 
 Instead, use one of the following:
 
-- **GitHub Security Advisories**: Report privately via [GitHub's Security Advisory feature](https://github.com/qubernetic-org/git-workflow-agent-skill/security/advisories/new) on this repository.
+- **GitHub Security Advisories**: Report privately via [GitHub's Security Advisory feature](https://github.com/qubernetic/git-workflow-agent-skill/security/advisories/new) on this repository.
 - **Email**: Send a detailed report to **security@qubernetic.org**.
 
 Please include:
